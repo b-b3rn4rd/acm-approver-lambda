@@ -1,4 +1,4 @@
-AWS ACM Approver Lambda
+[![Go Report Card](https://goreportcard.com/badge/github.com/b-b3rn4rd/acm-approver-lambda)](https://goreportcard.com/report/github.com/b-b3rn4rd/acm-approver-lambda) AWS ACM Approver Lambda
 =====================
 
 AWS Lambda function &mdash; approves ACM certificates issued with DNS validation option.
