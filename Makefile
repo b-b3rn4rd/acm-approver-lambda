@@ -2,8 +2,10 @@ FUNCTION_ALIAS ?= prd
 S3_BUCKET_MAME ?= ""
 STACK_NAME ?= acm-approver-lamda
 
+.DEFAULT_GOAL := build 
 install:
 	go get gopkg.in/alecthomas/gometalinter.v2
+	go get github.com/vektra/mockery/.../
 	gometalinter.v2 --install
 .PHONY: install
 
