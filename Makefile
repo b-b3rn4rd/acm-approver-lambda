@@ -7,6 +7,7 @@ install:
 	go get gopkg.in/alecthomas/gometalinter.v2
 	go get github.com/vektra/mockery/.../
 	gometalinter.v2 --install
+	go get -t ./cmd/lambda
 .PHONY: install
 
 mocks:
@@ -17,7 +18,6 @@ mocks:
 .PHONY: mocks
 
 pre_build: install mocks
-	go get -t ./cmd/lambda
 	gometalinter.v2 ./...
 	go test -v ./...
 .PHONY: pre_build
