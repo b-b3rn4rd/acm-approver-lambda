@@ -246,6 +246,84 @@ func (_m *ACMAPI) DescribeCertificateWithContext(_a0 aws.Context, _a1 *acm.Descr
 	return r0, r1
 }
 
+// ExportCertificate provides a mock function with given fields: _a0
+func (_m *ACMAPI) ExportCertificate(_a0 *acm.ExportCertificateInput) (*acm.ExportCertificateOutput, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *acm.ExportCertificateOutput
+	if rf, ok := ret.Get(0).(func(*acm.ExportCertificateInput) *acm.ExportCertificateOutput); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*acm.ExportCertificateOutput)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*acm.ExportCertificateInput) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExportCertificateRequest provides a mock function with given fields: _a0
+func (_m *ACMAPI) ExportCertificateRequest(_a0 *acm.ExportCertificateInput) (*request.Request, *acm.ExportCertificateOutput) {
+	ret := _m.Called(_a0)
+
+	var r0 *request.Request
+	if rf, ok := ret.Get(0).(func(*acm.ExportCertificateInput) *request.Request); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*request.Request)
+		}
+	}
+
+	var r1 *acm.ExportCertificateOutput
+	if rf, ok := ret.Get(1).(func(*acm.ExportCertificateInput) *acm.ExportCertificateOutput); ok {
+		r1 = rf(_a0)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*acm.ExportCertificateOutput)
+		}
+	}
+
+	return r0, r1
+}
+
+// ExportCertificateWithContext provides a mock function with given fields: _a0, _a1, _a2
+func (_m *ACMAPI) ExportCertificateWithContext(_a0 aws.Context, _a1 *acm.ExportCertificateInput, _a2 ...request.Option) (*acm.ExportCertificateOutput, error) {
+	_va := make([]interface{}, len(_a2))
+	for _i := range _a2 {
+		_va[_i] = _a2[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, _a0, _a1)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *acm.ExportCertificateOutput
+	if rf, ok := ret.Get(0).(func(aws.Context, *acm.ExportCertificateInput, ...request.Option) *acm.ExportCertificateOutput); ok {
+		r0 = rf(_a0, _a1, _a2...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*acm.ExportCertificateOutput)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(aws.Context, *acm.ExportCertificateInput, ...request.Option) error); ok {
+		r1 = rf(_a0, _a1, _a2...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCertificate provides a mock function with given fields: _a0
 func (_m *ACMAPI) GetCertificate(_a0 *acm.GetCertificateInput) (*acm.GetCertificateOutput, error) {
 	ret := _m.Called(_a0)

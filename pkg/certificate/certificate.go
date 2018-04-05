@@ -16,6 +16,7 @@ import (
 // Certificate interface
 type Certificate interface {
 	Approve(string, int64) error
+	Request(string, []string) error
 }
 
 // AcmCertificate storage struct
@@ -32,6 +33,22 @@ func New(acmvsvc acmiface.ACMAPI, r53svc route53iface.Route53API, logger *logrus
 		r53svc:  r53svc,
 		logger:  logger,
 	}
+}
+
+// Request request required certificate
+func (a *AcmCertificate) Request(domainName string, subjectAlternativeNames []string) error {
+	a.logger.WithField("domainName", domainName).WithField("alternativeNames", subjectAlternativeNames).Debug("Requesting certificate")
+	res, err := a.acmvsvc.RequestCertificate(&acm.RequestCertificateInput{
+		DomainName:              aws.String(domainName),
+		SubjectAlternativeNames: aws.StringSlice(subjectAlternativeNames),
+		ValidationMethod:        aws.String(acm.ValidationMethodDns),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return a.Approve(*res.CertificateArn, 300)
 }
 
 // Approve approve given certificate

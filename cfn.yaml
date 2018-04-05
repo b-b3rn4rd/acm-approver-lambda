@@ -6,6 +6,7 @@ Parameters:
     FunctionAlias:
       Type: String
 Resources:
+
   Function:
     Type: AWS::Serverless::Function
     Properties:

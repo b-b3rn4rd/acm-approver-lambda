@@ -7,8 +7,8 @@ import (
 
 // Input input parameters
 type Input struct {
-	CertificateArn string `json:"certificate-arn"`
-	TTL            int64  `json:"ttl"`
+	DomainName              string   `json:"domain-name"`
+	SubjectAlternativeNames []string `json:"subject-alternative-names"`
 }
 
 // Lambda interface
@@ -32,5 +32,5 @@ func New(cert certificate.Certificate, logger *logrus.Logger) *ApproverLambda {
 
 // Handler lambda request handler
 func (a *ApproverLambda) Handler(input Input) error {
-	return a.cert.Approve(input.CertificateArn, input.TTL)
+	return a.cert.Request(input.DomainName, input.SubjectAlternativeNames)
 }

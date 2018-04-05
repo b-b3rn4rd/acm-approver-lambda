@@ -17,6 +17,18 @@ func TestApprove(t *testing.T) {
 	r53 := &mocks2.Route53API{}
 	acmapi := &mocks2.ACMAPI{}
 
+	requestCertificateExpectedInput := &acm.RequestCertificateInput{
+		DomainName:              aws.String("www.example.net"),
+		ValidationMethod:        aws.String(acm.ValidationMethodDns),
+		SubjectAlternativeNames: aws.StringSlice([]string{"test.example.net"}),
+	}
+
+	requestCertificateRes := func(input *acm.RequestCertificateInput) *acm.RequestCertificateOutput {
+		return &acm.RequestCertificateOutput{
+			CertificateArn: aws.String("abc"),
+		}
+	}
+
 	listHostedZonesRes := func(input *route53.ListHostedZonesInput) *route53.ListHostedZonesOutput {
 		return &route53.ListHostedZonesOutput{HostedZones: []*route53.HostedZone{
 			{
@@ -67,6 +79,10 @@ func TestApprove(t *testing.T) {
 					Value: aws.String("secret")}}},
 		}}
 	}
+	acmapi.On("RequestCertificate", mock.MatchedBy(func(input *acm.RequestCertificateInput) bool {
+		return assert.Equal(t, *requestCertificateExpectedInput, *input)
+
+	})).Return(requestCertificateRes, nil)
 
 	acmapi.On("DescribeCertificate", mock.AnythingOfType("*acm.DescribeCertificateInput")).Return(describeCertificateRes, nil)
 	r53.On("ListHostedZones", mock.AnythingOfType("*route53.ListHostedZonesInput")).Return(listHostedZonesRes, nil)
@@ -78,7 +94,7 @@ func TestApprove(t *testing.T) {
 	t.Run("Testing approval process", func(t *testing.T) {
 		logger, _ := test.NewNullLogger()
 		c := certificate.New(acmapi, r53, logger)
-		c.Approve("abc", 300)
+		c.Request("www.example.net", []string{"test.example.net"})
 	})
 
 }

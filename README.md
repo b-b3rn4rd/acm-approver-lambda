@@ -1,7 +1,7 @@
 AWS ACM Approver Lambda
 =====================
 
-AWS Lambda function &mdash; approves ACM certificates issued with DNS validation option.
+AWS Lambda function &mdash; requests and approves ACM certificates issued with DNS validation option.
 Optionally, following lambda can be used as custom resource to automate certificate approval process.
 
 Installation

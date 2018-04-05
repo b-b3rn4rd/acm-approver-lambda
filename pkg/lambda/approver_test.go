@@ -10,17 +10,18 @@ import (
 )
 
 func TestApproverLambda(t *testing.T) {
-	t.Run(" lambda calls Approve method with input", func(t *testing.T) {
+	t.Run(" lambda calls Request method with input", func(t *testing.T) {
 		logger, _ := test.NewNullLogger()
 		s := &mocks.Certificate{}
 
-		s.On("Approve", "1", int64(300)).Return(nil)
+		s.On("Request", "www.example.net", []string{"test.example.net"}).Return(nil)
 
 		l := lambda.New(s, logger)
 
 		err := l.Handler(lambda.Input{
-			CertificateArn: "1",
-			TTL:            int64(300)})
+			DomainName:              "www.example.net",
+			SubjectAlternativeNames: []string{"test.example.net"},
+		})
 
 		assert.Nil(t, err)
 	})
