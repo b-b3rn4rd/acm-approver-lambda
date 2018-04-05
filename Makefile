@@ -1,6 +1,8 @@
 FUNCTION_ALIAS ?= prd
 S3_BUCKET_NAME ?= ""
 STACK_NAME ?= acm-approver-lamda
+DOMAIN_NAME ?= ""
+SUBJECT_ALTERNATIVE_NAMES ?= ""
 
 .DEFAULT_GOAL := build 
 install:
@@ -40,5 +42,7 @@ deploy: build
 		--stack-name $(STACK_NAME) \
         --parameter-overrides \
         	FunctionAlias=$(FUNCTION_ALIAS) \
-        	FunctionName=$(STACK_NAME)
+        	FunctionName=$(STACK_NAME) \
+        	DomainName=$(DOMAIN_NAME) \
+        	SubjectAlternativeNames=$(SUBJECT_ALTERNATIVE_NAMES)
 .PHONY: deploy

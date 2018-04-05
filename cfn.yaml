@@ -5,8 +5,18 @@ Parameters:
       Type: String
     FunctionAlias:
       Type: String
+    DomainName:
+      Type: String
+    SubjectAlternativeNames:
+      Type: CommaDelimitedList
 Resources:
-
+  Approve:
+    Type: Custom::AcmApproverLambda
+    Version: 1.0
+    Properties:
+      ServiceToken: !Ref Function
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames: !Ref SubjectAlternativeNames
   Function:
     Type: AWS::Serverless::Function
     Properties:
