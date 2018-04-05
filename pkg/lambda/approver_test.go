@@ -3,6 +3,7 @@ package lambda_test
 import (
 	"testing"
 
+	"github.com/aws/aws-lambda-go/cfn"
 	"github.com/b-b3rn4rd/acm-approver-lambda/mocks"
 	"github.com/b-b3rn4rd/acm-approver-lambda/pkg/lambda"
 	"github.com/sirupsen/logrus/hooks/test"
@@ -18,9 +19,11 @@ func TestApproverLambda(t *testing.T) {
 
 		l := lambda.New(s, logger)
 
-		err := l.Handler(lambda.Input{
-			DomainName:              "www.example.net",
-			SubjectAlternativeNames: []string{"test.example.net"},
+		_, _, err := l.Handler(nil, cfn.Event{
+			ResourceProperties: map[string]interface{}{
+				"DomainName":              "www.example.net",
+				"SubjectAlternativeNames": []string{"test.example.net"},
+			},
 		})
 
 		assert.Nil(t, err)

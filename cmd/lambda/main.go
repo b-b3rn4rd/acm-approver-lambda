@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/aws/aws-lambda-go/cfn"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/acm"
@@ -26,5 +27,5 @@ func main() {
 	acmSvc := acm.New(session.Must(session.NewSession()))
 	r53Svc := route53.New(session.Must(session.NewSession()))
 	l := approver.New(certificate.New(acmSvc, r53Svc, logger), logger)
-	lambda.Start(l.Handler)
+	lambda.Start(cfn.LambdaWrap(l.Handler))
 }

@@ -1,6 +1,9 @@
 package lambda
 
 import (
+	"context"
+
+	"github.com/aws/aws-lambda-go/cfn"
 	"github.com/b-b3rn4rd/acm-approver-lambda/pkg/certificate"
 	"github.com/sirupsen/logrus"
 )
@@ -13,7 +16,7 @@ type Input struct {
 
 // Lambda interface
 type Lambda interface {
-	Handler(Input) error
+	Handler(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error)
 }
 
 // ApproverLambda lambda struct
@@ -31,6 +34,11 @@ func New(cert certificate.Certificate, logger *logrus.Logger) *ApproverLambda {
 }
 
 // Handler lambda request handler
-func (a *ApproverLambda) Handler(input Input) error {
-	return a.cert.Request(input.DomainName, input.SubjectAlternativeNames)
+func (a *ApproverLambda) Handler(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
+	err = a.cert.Request(
+		event.ResourceProperties["DomainName"].(string),
+		event.ResourceProperties["SubjectAlternativeNames"].([]string),
+	)
+
+	return
 }
