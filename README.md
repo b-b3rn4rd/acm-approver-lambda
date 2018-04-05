@@ -1,8 +1,8 @@
-AWS ACM Approver Lambda
+[![Build Status](https://travis-ci.org/b-b3rn4rd/acm-approver-lambda.svg?branch=master)](https://travis-ci.org/b-b3rn4rd/acm-approver-lambda) [![Go Report Card](https://goreportcard.com/badge/github.com/b-b3rn4rd/acm-approver-lambda)](https://goreportcard.com/report/github.com/b-b3rn4rd/acm-approver-lambda) AWS ACM Approver Lambda
 =====================
 
-AWS Lambda function &mdash; requests and approves ACM certificates issued with DNS validation option.
-Optionally, following lambda can be used as custom resource to automate certificate approval process.
+AWS Lambda function &mdash; approves ACM certificates issued with DNS validation option.
+Optionally, following lambda can be used as a custom resource to automate certificate approval process.
 
 Installation
 ----------------------------

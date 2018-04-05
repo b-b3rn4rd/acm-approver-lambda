@@ -2,9 +2,12 @@ FUNCTION_ALIAS ?= prd
 S3_BUCKET_MAME ?= ""
 STACK_NAME ?= acm-approver-lamda
 
+.DEFAULT_GOAL := build 
 install:
 	go get gopkg.in/alecthomas/gometalinter.v2
+	go get github.com/vektra/mockery/.../
 	gometalinter.v2 --install
+	go get -t ./cmd/lambda
 .PHONY: install
 
 mocks:
@@ -15,7 +18,6 @@ mocks:
 .PHONY: mocks
 
 pre_build: install mocks
-	go get -t ./cmd/lambda
 	gometalinter.v2 ./...
 	go test -v ./...
 .PHONY: pre_build
