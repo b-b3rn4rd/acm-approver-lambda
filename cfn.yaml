@@ -26,6 +26,7 @@ Resources:
           - Effect: Allow
             Action:
               - acm:DescribeCertificate
+              - acm:RequestCertificate
               - route53:ListHostedZones
               - route53:ChangeResourceRecordSets
             Resource: "*"

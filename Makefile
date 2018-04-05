@@ -1,5 +1,5 @@
 FUNCTION_ALIAS ?= prd
-S3_BUCKET_MAME ?= ""
+S3_BUCKET_NAME ?= ""
 STACK_NAME ?= acm-approver-lamda
 
 .DEFAULT_GOAL := build 
@@ -31,7 +31,7 @@ deploy: build
 	aws cloudformation package \
 		--template-file cfn.yaml \
 		--output-template-file cfn.out.yaml \
-		--s3-bucket $(S3_BUCKET_MAME) \
+		--s3-bucket $(S3_BUCKET_NAME) \
 		--s3-prefix cfn
 
 	aws cloudformation deploy \

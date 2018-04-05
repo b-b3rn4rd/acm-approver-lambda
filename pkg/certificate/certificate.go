@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/aws/aws-sdk-go/service/acm/acmiface"
@@ -54,12 +56,28 @@ func (a *AcmCertificate) Request(domainName string, subjectAlternativeNames []st
 // Approve approve given certificate
 func (a *AcmCertificate) Approve(certificateArn string, ttl int64) error {
 	a.logger.WithField("certificateArn", certificateArn).Debug("received request to approve certificate")
-	res, err := a.acmvsvc.DescribeCertificate(&acm.DescribeCertificateInput{
-		CertificateArn: aws.String(certificateArn),
-	})
+	polls := 5
 
-	if err != nil {
-		return err
+	var res *acm.DescribeCertificateOutput
+	var err error
+
+	for i := 1; i <= polls; i++ {
+		polls--
+		res, err = a.acmvsvc.DescribeCertificate(&acm.DescribeCertificateInput{
+			CertificateArn: aws.String(certificateArn),
+		})
+
+		if err != nil {
+			return err
+		}
+
+		if res.Certificate.DomainValidationOptions[0].ResourceRecord != nil {
+			a.logger.WithField("certificateArn", certificateArn).Debug("certificate contains confirmation record")
+			break
+		}
+
+		a.logger.WithField("certificateArn", certificateArn).Debug("certificate does not contain confirmation record, doing another poll")
+		time.Sleep(5 * time.Second)
 	}
 
 	hostedZoneID, err := a.getHostedZoneID(res.Certificate.DomainName)

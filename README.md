@@ -9,7 +9,7 @@ Installation
 `git clone https://github.com/b-b3rn4rd/acm-approver-lambda.git`
 
 ```
-$ S3_BUCKET_MAME=my-bucket-name make deploy
+$ S3_BUCKET_NAME=my-bucket-name make deploy
 ... ouput ....
 Waiting for changeset to be created..
 Waiting for stack create/update to complete
