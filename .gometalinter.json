@@ -18,9 +18,7 @@
     "interfacer",
     "lll",
     "misspell",
-    "nakedret",
     "unconvert",
-    "unparam",
     "unused",
     "vet"
   ],
