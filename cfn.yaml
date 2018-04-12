@@ -12,11 +12,12 @@ Parameters:
 Resources:
   Approve:
     Type: Custom::AcmApproverLambda
+    DependsOn: Function
     Version: 1.0
     Properties:
       ServiceToken: !GetAtt Function.Arn
       DomainName: !Ref DomainName
-      SubjectAlternativeNames: !Ref SubjectAlternativeNames
+      SubjectAlternativeNames: !Join [ ",", !Ref SubjectAlternativeNames ]
   Function:
     Type: AWS::Serverless::Function
     Properties:
@@ -37,6 +38,7 @@ Resources:
             Action:
               - acm:DescribeCertificate
               - acm:RequestCertificate
+              - acm:DeleteCertificate
               - route53:ListHostedZones
               - route53:ChangeResourceRecordSets
             Resource: "*"

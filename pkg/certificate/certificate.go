@@ -18,7 +18,8 @@ import (
 // Certificate interface
 type Certificate interface {
 	Approve(string, int64) error
-	Request(string, []string) error
+	Request(string, []string) (string, error)
+	Delete(certificateArn string) error
 }
 
 // AcmCertificate storage struct
@@ -37,20 +38,36 @@ func New(acmvsvc acmiface.ACMAPI, r53svc route53iface.Route53API, logger *logrus
 	}
 }
 
-// Request request required certificate
-func (a *AcmCertificate) Request(domainName string, subjectAlternativeNames []string) error {
-	a.logger.WithField("domainName", domainName).WithField("alternativeNames", subjectAlternativeNames).Debug("Requesting certificate")
-	res, err := a.acmvsvc.RequestCertificate(&acm.RequestCertificateInput{
-		DomainName:              aws.String(domainName),
-		SubjectAlternativeNames: aws.StringSlice(subjectAlternativeNames),
-		ValidationMethod:        aws.String(acm.ValidationMethodDns),
-	})
+// Delete delete certificate
+func (a *AcmCertificate) Delete(certificateArn string) error {
+	a.logger.WithField("certificateArn", certificateArn).Debug("Deleting certificate")
 
-	if err != nil {
-		return err
+	_, err := a.acmvsvc.DeleteCertificate(&acm.DeleteCertificateInput{
+		CertificateArn: aws.String(certificateArn)})
+
+	return err
+}
+
+// Request request required certificate
+func (a *AcmCertificate) Request(domainName string, subjectAlternativeNames []string) (string, error) {
+	a.logger.WithField("domainName", domainName).WithField("alternativeNames", subjectAlternativeNames).Debug("Requesting certificate")
+
+	input := &acm.RequestCertificateInput{
+		DomainName:       aws.String(domainName),
+		ValidationMethod: aws.String(acm.ValidationMethodDns),
 	}
 
-	return a.Approve(*res.CertificateArn, 300)
+	if len(subjectAlternativeNames) > 0 {
+		input.SubjectAlternativeNames = aws.StringSlice(subjectAlternativeNames)
+	}
+
+	res, err := a.acmvsvc.RequestCertificate(input)
+
+	if err != nil {
+		return "", err
+	}
+
+	return *res.CertificateArn, a.Approve(*res.CertificateArn, 300)
 }
 
 // Approve approve given certificate

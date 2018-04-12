@@ -94,7 +94,32 @@ func TestApprove(t *testing.T) {
 	t.Run("Testing approval process", func(t *testing.T) {
 		logger, _ := test.NewNullLogger()
 		c := certificate.New(acmapi, r53, logger)
-		c.Request("www.example.net", []string{"test.example.net"})
+		resp, err := c.Request("www.example.net", []string{"test.example.net"})
+
+		assert.Equal(t, "abc", resp)
+		assert.Nil(t, err)
 	})
 
+}
+
+func TestDelete(t *testing.T) {
+	acmapi := &mocks2.ACMAPI{}
+	r53 := &mocks2.Route53API{}
+
+	expectedDeleteCertificateInput := &acm.DeleteCertificateInput{
+		CertificateArn: aws.String("abc"),
+	}
+
+	deleteCertificate := &acm.DeleteCertificateOutput{}
+	acmapi.On("DeleteCertificate", mock.MatchedBy(func(input *acm.DeleteCertificateInput) bool {
+		return assert.Equal(t, *expectedDeleteCertificateInput, *input)
+
+	})).Return(deleteCertificate, nil)
+	t.Run("Testing removal process", func(t *testing.T) {
+		logger, _ := test.NewNullLogger()
+		c := certificate.New(acmapi, r53, logger)
+		err := c.Delete("abc")
+
+		assert.Nil(t, err)
+	})
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestApproverLambda(t *testing.T) {
+func TestApproverLambdaWithAlternativeNames(t *testing.T) {
 	t.Run(" lambda calls Request method with input", func(t *testing.T) {
 		logger, _ := test.NewNullLogger()
 		s := &mocks.Certificate{}
@@ -20,9 +20,53 @@ func TestApproverLambda(t *testing.T) {
 		l := lambda.New(s, logger)
 
 		_, _, err := l.Handler(nil, cfn.Event{
+			ResourceType: string(cfn.RequestCreate),
 			ResourceProperties: map[string]interface{}{
 				"DomainName":              "www.example.net",
-				"SubjectAlternativeNames": []string{"test.example.net"},
+				"SubjectAlternativeNames": []interface{}{"test.example.net"},
+			},
+		})
+
+		assert.Nil(t, err)
+	})
+
+}
+
+func TestApproverLambdaWithOutAlternativeNames(t *testing.T) {
+	t.Run(" lambda calls Request method with input", func(t *testing.T) {
+		logger, _ := test.NewNullLogger()
+		s := &mocks.Certificate{}
+
+		s.On("Request", "www.example.net", []string{}).Return(nil)
+
+		l := lambda.New(s, logger)
+
+		_, _, err := l.Handler(nil, cfn.Event{
+			ResourceType: string(cfn.RequestCreate),
+			ResourceProperties: map[string]interface{}{
+				"DomainName": "www.example.net",
+			},
+		})
+
+		assert.Nil(t, err)
+	})
+
+}
+
+func TestApproverLambdaDelete(t *testing.T) {
+	t.Run(" lambda calls Delete method with input", func(t *testing.T) {
+		logger, _ := test.NewNullLogger()
+		s := &mocks.Certificate{}
+
+		s.On("Delete", "abc").Return(nil)
+
+		l := lambda.New(s, logger)
+
+		_, _, err := l.Handler(nil, cfn.Event{
+			ResourceType:       string(cfn.RequestDelete),
+			PhysicalResourceID: "abc",
+			ResourceProperties: map[string]interface{}{
+				"DomainName": "www.example.net",
 			},
 		})
 

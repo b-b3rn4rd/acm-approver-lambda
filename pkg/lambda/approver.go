@@ -8,12 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Input input parameters
-type Input struct {
-	DomainName              string   `json:"domain-name"`
-	SubjectAlternativeNames []string `json:"subject-alternative-names"`
-}
-
 // Lambda interface
 type Lambda interface {
 	Handler(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error)
@@ -35,10 +29,27 @@ func New(cert certificate.Certificate, logger *logrus.Logger) *ApproverLambda {
 
 // Handler lambda request handler
 func (a *ApproverLambda) Handler(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
-	err = a.cert.Request(
-		event.ResourceProperties["DomainName"].(string),
-		event.ResourceProperties["SubjectAlternativeNames"].([]string),
-	)
+	subjectAlternativeNames := []string{}
+
+	if subjectAlternativeNamesInput, ok := event.ResourceProperties["SubjectAlternativeNames"].([]interface{}); ok {
+		for _, subjectAlternativeName := range subjectAlternativeNamesInput {
+			subjectAlternativeNames = append(subjectAlternativeNames, subjectAlternativeName.(string))
+		}
+	}
+	switch event.RequestType {
+	case cfn.RequestDelete:
+		if event.PhysicalResourceID != "" {
+			err = a.cert.Delete(event.PhysicalResourceID)
+		}
+		physicalResourceID = event.PhysicalResourceID
+	case cfn.RequestCreate:
+		physicalResourceID, err = a.cert.Request(
+			event.ResourceProperties["DomainName"].(string),
+			subjectAlternativeNames,
+		)
+	default:
+		physicalResourceID = event.PhysicalResourceID
+	}
 
 	return
 }
